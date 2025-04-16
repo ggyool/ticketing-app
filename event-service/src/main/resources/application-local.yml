@@ -1,0 +1,25 @@
+server:
+  port: 8081
+
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: TRACE
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:mysql://localhost:3306/eventdb?serverTimezone=Asia/Seoul
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+    hibernate:
+      ddl-auto: update
