@@ -1,11 +1,11 @@
-package com.ggyool.servlet_ticketing_app
+package com.ggyool.ticketing
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class ServletTicketingAppApplication
+class TicketingApplication
 
 fun main(args: Array<String>) {
-	runApplication<ServletTicketingAppApplication>(*args)
+    runApplication<TicketingApplication>(*args)
 }
