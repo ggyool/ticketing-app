@@ -1,4 +1,4 @@
-package com.ggyool.event.usercase
+package com.ggyool.event.application.usercase
 
 import java.time.LocalDateTime
 

@@ -1,8 +1,8 @@
-package com.ggyool.event.usercase.service
+package com.ggyool.event.application.usercase.service
 
+import com.ggyool.event.application.usercase.ReadEventUsecase
 import com.ggyool.event.exception.EventAppException
 import com.ggyool.event.repository.EventJpaRepository
-import com.ggyool.event.usercase.ReadEventUsecase
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
