@@ -1,3 +1,3 @@
-rootProject.name = "servlet-ticketing-app"
+rootProject.name = "ticketing-app"
 include("ticketing-service")
-include("event-service")
+include("servlet-event-service")
