@@ -1,0 +1,8 @@
+version: '3.5'
+services:
+  ticketing-service-redis:
+    image: redis:7.4.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./.data/redis:/data
