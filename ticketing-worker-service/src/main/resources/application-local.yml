@@ -1,0 +1,8 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9094,localhost:9095
+    consumer:
+      auto-offset-reset: latest
+  redis:
+    host: localhost
+    port: 6379
