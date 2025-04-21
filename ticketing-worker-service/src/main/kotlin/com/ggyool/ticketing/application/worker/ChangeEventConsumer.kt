@@ -56,6 +56,6 @@ class ChangeEventConsumer(
     companion object {
         private const val CREATE_EVENT_TOPIC: String = "event.create"
         private const val UPDATE_EVENT_TOPIC: String = "event.update"
-        private const val TICKETING_QUANTITY_KEY: String = "ticketing.quantity.%s"
+        private const val TICKETING_QUANTITY_KEY: String = "ticketing:quantity:%s"
     }
 }
