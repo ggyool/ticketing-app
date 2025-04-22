@@ -1,4 +1,4 @@
-package com.ggyool.event.application.usercase
+package com.ggyool.event.application.usecase
 
 interface RegisterEventUsecase {
 

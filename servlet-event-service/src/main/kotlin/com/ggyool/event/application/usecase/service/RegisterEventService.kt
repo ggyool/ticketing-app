@@ -1,6 +1,6 @@
-package com.ggyool.event.application.usercase.service
+package com.ggyool.event.application.usecase.service
 
-import com.ggyool.event.application.usercase.RegisterEventUsecase
+import com.ggyool.event.application.usecase.RegisterEventUsecase
 import com.ggyool.event.repository.EventJpaRepository
 import com.ggyool.event.repository.entity.EventEntity
 import org.springframework.stereotype.Service

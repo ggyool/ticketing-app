@@ -1,4 +1,4 @@
-package com.ggyool.event.application.usercase.service
+package com.ggyool.event.application.usecase.service
 
 import com.ggyool.event.exception.EventAppException
 import com.ggyool.event.repository.EventJpaRepository

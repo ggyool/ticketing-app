@@ -1,8 +1,8 @@
 package com.ggyool.event.controller
 
-import com.ggyool.event.application.usercase.ModifyEventUsecase
-import com.ggyool.event.application.usercase.ReadEventUsecase
-import com.ggyool.event.application.usercase.RegisterEventUsecase
+import com.ggyool.event.application.usecase.ModifyEventUsecase
+import com.ggyool.event.application.usecase.ReadEventUsecase
+import com.ggyool.event.application.usecase.RegisterEventUsecase
 import org.springframework.web.bind.annotation.*
 
 @RequestMapping("event")
