@@ -82,36 +82,6 @@ class ReserveTicketService(
         }
     }
 
-    // TODO: remove
-    fun reserveTicketV1(reserveTicketInput: ReserveTicketUsecase.ReserveTicketInput) {
-        val eventId = reserveTicketInput.eventId
-        val redisKey = TICKETING_QUANTITY_KEY.format(eventId)
-        // TODO: MEMO
-        // count 먼저 체크하고 decr 하는 동작은 원자적이지 않기 때문에 분산 환경에서는 일관성이 깨지게 됨
-        // 감소만 필요하다면 decr 만 수행하여 return 값이 0보다 작은지만 살펴봐도 유효한 예약인지 알 수 있는데
-        // 지금 상황은 10분 선점 후 결제하지 않으면 예약을 취소시키고 수량을 올려야해서 lua script로 묶는 방법을 사용했다.
-        // 카운트 줄인 후에 결제 대기 이벤트 만드려고 했으나 결제 대기시간이 지나도 결제 하지 않은 경우에 다시 카운트를 올려줘야하는데 까다롭다.
-        // keyspace notification 써보려다가 서버가 계속 살아있어야하는 이슈가 있고
-        // 레디스 리스트를 큐처럼 사용하여 주기적으로 바라보면서 만료 체크하려고 했으나 위의 구현이 더 깔끔할 것 같아서 바꿈
-        val script = """
-            local count = redis.call("GET", KEYS[1])
-            if tonumber(count) <= 0 then
-                return -999
-            end
-            return redis.call("DECR", KEYS[1])
-        """.trimIndent()
-        val remainTicket = stringRedisTemplate.execute(
-            DefaultRedisScript(script, Long::class.java),
-            listOf(redisKey)
-        )
-        if (remainTicket == 999L) {
-            throw TicketingAppException(
-                HttpStatus.CONFLICT,
-                "[eventId: ${eventId}] 남은 티켓 수량이 없습니다"
-            )
-        }
-    }
-
     companion object {
         private const val TICKETING_RESERVATION_LOCK_KEY = "lock:ticketing:reservation:%s"
         private const val TICKETING_QUANTITY_KEY = "ticketing:quantity:%s"
