@@ -2,6 +2,7 @@ server:
   port: 8082
 
 spring:
-  redis:
-    host: localhost
-    port: 6379
+  data:
+    redis:
+      host: localhost
+      port: 6379
