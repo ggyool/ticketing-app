@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 class TicketingAppControllerAdvice {
 
     @ExceptionHandler
-    fun handleEventAppException(ex: TicketingAppException) =
+    fun handleTicketingAppException(ex: TicketingAppException) =
         ErrorResponse.builder(ex, ex.httpStatus, ex.reason).build()
 }
