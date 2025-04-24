@@ -1,13 +1,18 @@
 package com.ggyool.ticketing.common
 
+import org.redisson.api.RLock
 import org.redisson.api.RedissonClient
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 
-val redissonClient: RedissonClient by lazy {
+private val redissonClient: RedissonClient by lazy {
     ApplicationContextProvider.getBean(RedissonClient::class.java)
 }
 
- fun <T> redisLock(
+private val logger: Logger = LoggerFactory.getLogger("RedisLock")
+
+fun <T> redisLock(
     keyGenerator: () -> String,
     waitMillis: Long = 1000,
     releaseMillis: Long = 1000,
@@ -18,9 +23,17 @@ val redissonClient: RedissonClient by lazy {
         try {
             return block()
         } finally {
-            lock.unlock()
+            unlock(lock)
         }
     }
     return null
+}
+
+private fun unlock(lock: RLock) {
+    try {
+        lock.unlock()
+    } catch (ex: IllegalMonitorStateException) {
+        logger.info("[already unlocked] ${ex.message}")
+    }
 }
 
