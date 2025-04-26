@@ -1,6 +1,6 @@
 package com.ggyool.ticketing.application.usecase.service
 
-import com.ggyool.ticketing.application.usecase.ReserveTicketUsecase
+import com.ggyool.ticketing.application.usecase.ReserveTicketingUsecase
 import com.ggyool.ticketing.common.redisLock
 import com.ggyool.ticketing.exception.TicketingAppException
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -9,15 +9,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
-class ReserveTicketService(
+class ReserveTicketingService(
     private val stringRedisTemplate: StringRedisTemplate,
-) : ReserveTicketUsecase {
+) : ReserveTicketingUsecase {
 
-    override fun reserveTicket(reserveTicketInput: ReserveTicketUsecase.ReserveTicketInput) {
+    override fun reserveTicketing(reserveTicketInput: ReserveTicketingUsecase.ReserveTicketInput) {
         val eventId = reserveTicketInput.eventId
         val userId = reserveTicketInput.userId.toString()
         validateDuplicatedReservation(eventId, userId)
-        checkAndReserveTicket(eventId, userId)
+        checkAndReserveTicketing(eventId, userId)
     }
 
     private fun validateDuplicatedReservation(eventId: Long, userId: String) {
@@ -38,7 +38,7 @@ class ReserveTicketService(
         }
     }
 
-    private fun checkAndReserveTicket(eventId: Long, userId: String) = redisLock(
+    private fun checkAndReserveTicketing(eventId: Long, userId: String) = redisLock(
         keyGenerator = { TICKETING_RESERVATION_LOCK_KEY.format(eventId) },
         waitMillis = 2000,
         releaseMillis = 2000,
