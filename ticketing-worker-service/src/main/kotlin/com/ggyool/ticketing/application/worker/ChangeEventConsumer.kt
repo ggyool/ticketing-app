@@ -17,7 +17,7 @@ class ChangeEventConsumer(
     @KafkaListener(
         topics = [CREATE_EVENT_TOPIC],
         containerFactory = "eventKafkaListenerContainerFactory",
-        groupId = "change-event-group",
+        groupId = "create-event-group",
         concurrency = "2"
     )
     fun listenCreateEvent(record: ConsumerRecord<String, String>) {
@@ -32,7 +32,7 @@ class ChangeEventConsumer(
     @KafkaListener(
         topics = [UPDATE_EVENT_TOPIC],
         containerFactory = "eventKafkaListenerContainerFactory",
-        groupId = "change-event-group",
+        groupId = "update-event-group",
         concurrency = "2"
     )
     fun listenUpdateEvent(record: ConsumerRecord<String, String>) {
