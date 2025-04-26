@@ -24,4 +24,4 @@ spring:
     hibernate:
       ddl-auto: update
   kafka:
-    bootstrap-servers: localhost:9096,localhost:9097
+    bootstrap-servers: localhost:9094,localhost:9095
