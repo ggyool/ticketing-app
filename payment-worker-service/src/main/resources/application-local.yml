@@ -1,0 +1,26 @@
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: TRACE
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  kafka:
+    bootstrap-servers: localhost:9094,localhost:9095
+    consumer:
+      auto-offset-reset: latest
+  datasource:
+    url: jdbc:mysql://localhost:3307/paymentdb?serverTimezone=Asia/Seoul
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: user
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+    hibernate:
+      ddl-auto: update
