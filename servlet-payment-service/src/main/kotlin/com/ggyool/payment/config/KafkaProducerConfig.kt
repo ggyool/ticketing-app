@@ -1,4 +1,4 @@
-package com.ggyool.event.config
+package com.ggyool.payment.config
 
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer

@@ -1,4 +1,4 @@
-package com.ggyool.event.exception
+package com.ggyool.payment.exception
 
 import org.springframework.web.ErrorResponse
 import org.springframework.web.bind.annotation.ExceptionHandler

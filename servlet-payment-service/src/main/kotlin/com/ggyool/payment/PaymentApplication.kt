@@ -1,4 +1,4 @@
-package com.ggyool.event
+package com.ggyool.payment
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
