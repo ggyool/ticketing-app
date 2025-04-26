@@ -7,17 +7,21 @@ import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class ReserveTicketingService(
     private val stringRedisTemplate: StringRedisTemplate,
+    private val registerTicketService: RegisterTicketService,
 ) : ReserveTicketingUsecase {
 
     override fun reserveTicketing(reserveTicketInput: ReserveTicketingUsecase.ReserveTicketInput) {
         val eventId = reserveTicketInput.eventId
-        val userId = reserveTicketInput.userId.toString()
-        validateDuplicatedReservation(eventId, userId)
-        checkAndReserveTicketing(eventId, userId)
+        val userId = reserveTicketInput.userId
+        validateDuplicatedReservation(eventId, userId.toString())
+        checkAndReserveTicketing(eventId, userId.toString())
+        // TODO: 이것만 실패하는 케이스
+        registerTicketService.registerTicket(eventId, userId, LocalDateTime.now())
     }
 
     private fun validateDuplicatedReservation(eventId: Long, userId: String) {

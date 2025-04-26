@@ -1,8 +1,31 @@
 server:
   port: 8082
 
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: TRACE
+
 spring:
+  config:
+    activate:
+      on-profile: local
   data:
     redis:
       host: localhost
       port: 6379
+  datasource:
+    url: jdbc:mysql://localhost:3308/ticketingdb?serverTimezone=Asia/Seoul
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: user
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+    hibernate:
+      ddl-auto: update
+  kafka:
+    bootstrap-servers: localhost:9094,localhost:9095
