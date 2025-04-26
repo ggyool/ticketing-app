@@ -20,6 +20,7 @@ class EventEntityListener(
                     id = eventEntity.id!!,
                     name = eventEntity.name,
                     ticketQuantity = eventEntity.ticketQuantity,
+                    version = eventEntity.version!!,
                     createdAt = eventEntity.createdAt!!,
                     updatedAt = eventEntity.updatedAt!!
                 )
@@ -35,6 +36,7 @@ class EventEntityListener(
                     id = eventEntity.id!!,
                     name = eventEntity.name,
                     ticketQuantity = eventEntity.ticketQuantity,
+                    version = eventEntity.version!!,
                     createdAt = eventEntity.createdAt!!,
                     updatedAt = eventEntity.updatedAt!!
                 )

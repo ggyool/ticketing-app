@@ -13,6 +13,7 @@ data class EventCreateEvent(
         val id: Long,
         val name: String,
         val ticketQuantity: Long,
+        val version: Long,
         val createdAt: LocalDateTime,
         val updatedAt: LocalDateTime,
     )
