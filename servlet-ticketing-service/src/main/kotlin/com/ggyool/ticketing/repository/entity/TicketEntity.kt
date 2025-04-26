@@ -21,9 +21,6 @@ class TicketEntity(
     @Column(nullable = false)
     var userId: Long,
 
-    @Column(nullable = true)
-    var paymentId: Long?,
-
     @Column(nullable = false)
     var reservedAt: LocalDateTime,
 
@@ -40,7 +37,6 @@ class TicketEntity(
         id = null,
         eventId = eventId,
         userId = userId,
-        paymentId = null,
         reservedAt = reservedAt,
         version = null,
         createdAt = null,
