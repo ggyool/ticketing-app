@@ -44,7 +44,7 @@ services:
       - KAFKA_KRAFT_CLUSTER_ID=event-service-kraft-cluster
     volumes:
       - ./.data/kafka-2:/bitnami/kafka
-  event-kafka-ui:
+  kafka-ui:
     image: provectuslabs/kafka-ui:v0.7.2
     ports:
       - "8089:8080"
