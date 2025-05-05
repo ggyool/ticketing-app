@@ -25,3 +25,7 @@ spring:
       ddl-auto: update
   kafka:
     bootstrap-servers: localhost:9094,localhost:9095
+    properties:
+      dead-letter-bootstrap-servers: localhost:9096
+  jackson:
+    default-property-inclusion: non_null
