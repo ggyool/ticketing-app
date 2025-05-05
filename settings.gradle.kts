@@ -1,4 +1,5 @@
 rootProject.name = "ticketing-app"
+include("event-common")
 include("servlet-ticketing-service")
 include("servlet-event-service")
 include("ticketing-worker-service")
