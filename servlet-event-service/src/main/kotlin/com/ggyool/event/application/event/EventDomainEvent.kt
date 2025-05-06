@@ -5,8 +5,8 @@ import com.ggyool.event.repository.entity.EventEntity
 import java.time.LocalDateTime
 
 data class EventDomainEvent(
-    override var eventId: String?,
-    override var version: Long?,
+    override val eventId: String?,
+    override val version: Long?,
     override val aggregateId: Long,
     override val aggregateType: String,
     override val eventType: String,

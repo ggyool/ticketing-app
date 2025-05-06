@@ -49,8 +49,8 @@ class KafkaProducerConfig(
                         objectMapper.writeValueAsString(event)
                     )
                 } catch (ex: Exception) {
-                    LOG.error("[{}] Dead Letter 이벤트 발급 실패 {}", event.eventId, ex.message)
-                    LOG.error("[{}] {}", event.eventId, event.toString())
+                    logger.error("[{}] Dead Letter 이벤트 발급 실패 {}", event.eventId, ex.message)
+                    logger.error("[{}] {}", event.eventId, event.toString())
                 }
             }
         }
@@ -89,6 +89,6 @@ class KafkaProducerConfig(
     }
 
     companion object {
-        private val LOG = LoggerFactory.getLogger(this::class.java.name)
+        private val logger = LoggerFactory.getLogger(this::class.java.name)
     }
 }
