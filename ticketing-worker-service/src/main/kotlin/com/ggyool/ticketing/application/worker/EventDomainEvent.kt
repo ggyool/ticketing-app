@@ -1,18 +1,19 @@
 package com.ggyool.ticketing.application.worker
 
+import com.ggyool.common.event.DomainEvent
 import com.ggyool.ticketing.repository.entity.EventLogEntity
 import java.time.LocalDateTime
 import java.util.*
 
 data class EventDomainEvent(
-    val eventId: String,
-    val version: Long,
-    val aggregateId: Long,
-    val aggregateType: String,
-    val eventType: String,
-    val timeStamp: LocalDateTime,
-    val payload: Payload,
-) {
+    override val eventId: String,
+    override val version: Long,
+    override val aggregateId: Long,
+    override val aggregateType: String,
+    override val eventType: String,
+    override val timeStamp: LocalDateTime,
+    override val payload: Payload,
+) : DomainEvent<Long, EventDomainEvent.Payload> {
 
     fun toEventLogEntity(): EventLogEntity {
         return EventLogEntity(
