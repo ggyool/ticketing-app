@@ -9,7 +9,7 @@ data class DeadLetterEvent(
     val maxRetryCount: Int = 3,
     val retryIntervalMillis: Int = 10000,
     val timeStamp: LocalDateTime = LocalDateTime.now(),
-    val exceptionName: String,
+    val reason: String,
     val reissuedTopic: String,
     val reissuedKey: String,
     val reissuedPayload: String,
