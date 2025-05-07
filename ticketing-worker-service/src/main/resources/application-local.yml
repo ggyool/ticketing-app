@@ -10,6 +10,8 @@ spring:
     bootstrap-servers: localhost:9094,localhost:9095
     consumer:
       auto-offset-reset: latest
+    properties:
+      dead-letter-bootstrap-servers: localhost:9096
   redis:
     host: localhost
     port: 6379
