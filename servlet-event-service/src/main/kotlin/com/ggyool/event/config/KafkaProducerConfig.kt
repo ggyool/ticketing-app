@@ -37,7 +37,7 @@ class KafkaProducerConfig(
                 exception: java.lang.Exception
             ) {
                 val event = DeadLetterEvent(
-                    exceptionName = exception.javaClass.name,
+                    reason = exception.javaClass.name,
                     reissuedTopic = producerRecord.topic(),
                     reissuedKey = producerRecord.key(),
                     reissuedPayload = producerRecord.value()
@@ -48,9 +48,14 @@ class KafkaProducerConfig(
                         event.eventId.toString(),
                         objectMapper.writeValueAsString(event)
                     )
+                    logger.info("[{}] Dead Letter 이벤트 발급 성공 ({})", event.eventId, event)
                 } catch (ex: Exception) {
-                    logger.error("[{}] Dead Letter 이벤트 발급 실패 {}", event.eventId, ex.message)
-                    logger.error("[{}] {}", event.eventId, event.toString())
+                    logger.error(
+                        "[{}] Dead Letter 이벤트 발급 실패 (event: {} / ex: {})",
+                        event.eventId,
+                        event,
+                        ex.stackTraceToString()
+                    )
                 }
             }
         }
