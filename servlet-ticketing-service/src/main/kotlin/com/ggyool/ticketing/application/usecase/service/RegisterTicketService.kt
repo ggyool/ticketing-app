@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
+// TODO: 결제까지 완료된 티켓 생성
 @Service
 class RegisterTicketService(
     private val ticketJpaRepository: TicketJpaRepository

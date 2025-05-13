@@ -10,11 +10,17 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/ticketing")
 @RestController
 class TicketingController(
-    private val reserveTicketingUsecase: ReserveTicketingUsecase
+    private val reserveTicketingUsecase: ReserveTicketingUsecase,
+    private val processTicketingUsecase: ProcessTicketingUsecase
 ) {
 
     @PostMapping("/reserve")
     fun reserve(
         @RequestBody input: ReserveTicketingUsecase.ReserveTicketingInput
     ) = reserveTicketingUsecase.reserveTicketing(input)
+
+    @PostMapping("/process")
+    fun process(
+        @RequestBody input: ProcessTicketingUsecase.ProcessTicketingInput
+    ) = processTicketingUsecase.processTicketing(input)
 }
