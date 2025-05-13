@@ -4,15 +4,16 @@ import com.ggyool.common.saga.model.SagaContext
 import com.ggyool.common.saga.model.SagaContextFactory
 import com.ggyool.common.saga.model.SagaResponse
 
-class EventBasedSaga<T : SagaContext>(
-    private val handlers: SagaHandlers<T>,
+abstract class EventBasedSaga<T : SagaContext>(
+    handlerList: List<SagaHandler<T>>,
     private val sagaRepository: SagaRepository<T>,
     private val sagaContextFactory: SagaContextFactory<T>,
 ) : Saga<T> {
 
-    override fun start(): T {
-        val sagaContext = sagaContextFactory.initContext()
-        val processedSagaContext = handlers.first().request(sagaContext)
+    private val handlers: SagaHandlers<T> = SagaHandlers(handlerList)
+
+    override fun start(initialContext: T): T {
+        val processedSagaContext = handlers.first().request(initialContext)
         return sagaRepository.save(processedSagaContext)
     }
 
@@ -36,10 +37,16 @@ class EventBasedSaga<T : SagaContext>(
             } else {
                 val previousHandler = handlers.findByStepName(currentStep)
                 previousHandler.compensate(
-                    sagaContextFactory.compensating(sagaContext, currentStep, previousHandler.stepName)
+                    sagaContextFactory.compensating(
+                        sagaContext,
+                        currentStep,
+                        previousHandler.stepName
+                    )
                 )
             }
         }
         return sagaRepository.save(processedSagaContext)
     }
+
+    override fun firstStepName() = handlers.first().stepName
 }

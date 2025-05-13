@@ -4,8 +4,6 @@ import java.util.*
 
 interface SagaContextFactory<T : SagaContext> {
 
-    fun initContext(): T
-
     fun createWithAllArgs(
         id: UUID,
         version: Long,

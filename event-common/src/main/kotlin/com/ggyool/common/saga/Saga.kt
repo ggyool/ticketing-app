@@ -5,7 +5,9 @@ import com.ggyool.common.saga.model.SagaResponse
 
 interface Saga<T : SagaContext> {
 
-    fun start(): T
+    fun start(initialContext: T): T
 
     fun process(sagaResponse: SagaResponse): T
+
+    fun firstStepName(): String
 }
