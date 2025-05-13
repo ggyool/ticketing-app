@@ -1,5 +1,6 @@
 package com.ggyool.ticketing.controller
 
+import com.ggyool.ticketing.application.usecase.ProcessTicketingUsecase
 import com.ggyool.ticketing.application.usecase.ReserveTicketingUsecase
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -14,6 +15,6 @@ class TicketingController(
 
     @PostMapping("/reserve")
     fun reserve(
-        @RequestBody input: ReserveTicketingUsecase.ReserveTicketInput
+        @RequestBody input: ReserveTicketingUsecase.ReserveTicketingInput
     ) = reserveTicketingUsecase.reserveTicketing(input)
 }

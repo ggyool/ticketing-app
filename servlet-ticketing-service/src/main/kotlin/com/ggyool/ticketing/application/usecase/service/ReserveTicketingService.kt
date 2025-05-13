@@ -7,21 +7,22 @@ import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class ReserveTicketingService(
     private val stringRedisTemplate: StringRedisTemplate,
-    private val registerTicketService: RegisterTicketService,
 ) : ReserveTicketingUsecase {
 
-    override fun reserveTicketing(reserveTicketInput: ReserveTicketingUsecase.ReserveTicketInput) {
-        val eventId = reserveTicketInput.eventId
-        val userId = reserveTicketInput.userId
+    override fun reserveTicketing(reserveTicketingInput: ReserveTicketingUsecase.ReserveTicketingInput) {
+        val eventId = reserveTicketingInput.eventId
+        val userId = reserveTicketingInput.userId
         validateDuplicatedReservation(eventId, userId.toString())
-        checkAndReserveTicketing(eventId, userId.toString())
-        // TODO: 이것만 실패하는 케이스
-        registerTicketService.registerTicket(eventId, userId, LocalDateTime.now())
+        try {
+            checkAndReserveTicketing(eventId, userId.toString())
+        } catch (ex: Exception) {
+            rollbackReserveTicketing(eventId, userId.toString())
+        }
     }
 
     private fun validateDuplicatedReservation(eventId: Long, userId: String) {
@@ -51,7 +52,7 @@ class ReserveTicketingService(
 
         val opsForHash = stringRedisTemplate.opsForHash<String, String>()
         val paymentWaitingKey = TICKETING_PAYMENT_WAITING_KEY.format(eventId)
-        opsForHash.put(paymentWaitingKey, userId, EMPTY_STRING)
+        opsForHash.put(paymentWaitingKey, userId, UUID.randomUUID().toString())
         val script = """
             local res = redis.call("HEXPIRE", KEYS[1], ARGV[1], "FIELDS", "$APPLY_FIELD_COUNT", ARGV[2])
             return res
@@ -62,6 +63,12 @@ class ReserveTicketingService(
             PAYMENT_WAITING_EXPIRE_SECOND.toString(),
             userId,
         )
+    }
+
+    private fun rollbackReserveTicketing(eventId: Long, userId: String) {
+        val opsForHash = stringRedisTemplate.opsForHash<String, String>()
+        val paymentWaitingKey = TICKETING_PAYMENT_WAITING_KEY.format(eventId)
+        opsForHash.delete(paymentWaitingKey, userId)
     }
 
     private fun validateTicketQuantity(eventId: Long) {
@@ -91,7 +98,6 @@ class ReserveTicketingService(
         private const val TICKETING_QUANTITY_KEY = "ticketing:quantity:%s"
         private const val TICKETING_PAYMENT_WAITING_KEY = "ticketing:%s:payment:waiting"
         private const val TICKETING_PAYMENT_COMPLETED_KEY = "ticketing:%s:payment:completed"
-        private const val EMPTY_STRING = ""
         private const val APPLY_FIELD_COUNT = "1"
 
         private const val PAYMENT_WAITING_EXPIRE_SECOND = 600L

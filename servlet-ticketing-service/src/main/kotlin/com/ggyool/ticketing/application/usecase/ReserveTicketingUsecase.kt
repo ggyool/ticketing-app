@@ -2,9 +2,9 @@ package com.ggyool.ticketing.application.usecase
 
 interface ReserveTicketingUsecase {
 
-    fun reserveTicketing(reserveTicketInput: ReserveTicketInput)
+    fun reserveTicketing(reserveTicketingInput: ReserveTicketingInput)
 
-    data class ReserveTicketInput(
+    data class ReserveTicketingInput(
         val eventId: Long,
         val userId: Long,
     )
