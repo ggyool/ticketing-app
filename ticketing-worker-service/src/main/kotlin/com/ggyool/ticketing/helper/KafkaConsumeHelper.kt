@@ -1,9 +1,10 @@
-package com.ggyool.user.helper
+package com.ggyool.ticketing.helper
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ggyool.common.event.DeadLetterEvent
-import com.ggyool.user.application.producer.DeadLetterKafkaProducer
-import com.ggyool.user.repository.EventLogJpaRepository
-import com.ggyool.user.repository.entity.EventLogEntity
+import com.ggyool.ticketing.application.producer.DeadLetterKafkaProducer
+import com.ggyool.ticketing.application.service.EventLogService
+import com.ggyool.ticketing.application.worker.EventDomainEvent
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -14,30 +15,35 @@ private val deadLetterKafkaProducer: DeadLetterKafkaProducer by lazy {
     ApplicationContextProvider.getBean(DeadLetterKafkaProducer::class.java)
 }
 
-private val eventLogJpaRepository: EventLogJpaRepository by lazy {
-    ApplicationContextProvider.getBean(EventLogJpaRepository::class.java)
+private val eventLogService: EventLogService by lazy {
+    ApplicationContextProvider.getBean(EventLogService::class.java)
 }
 
-private val logger: Logger = LoggerFactory.getLogger("KafkaConsumerHelper")
+private val objectMapper: ObjectMapper by lazy {
+    ApplicationContextProvider.getBean(ObjectMapper::class.java)
+}
 
-fun consumeWithDlt(
+private val logger: Logger = LoggerFactory.getLogger("KafkaConsumeHelper")
+
+fun consumeDomainEventWithDlt(
     record: ConsumerRecord<String, String>,
     acknowledgment: Acknowledgment,
     block: () -> Unit,
 ) {
-    val eventId = UUID.fromString(record.key())
+    val event = objectMapper.readValue(record.value(), EventDomainEvent::class.java)
+    val eventId = UUID.fromString(event.eventId)
     try {
-        if (eventLogJpaRepository.existsById(eventId)) {
+        if (eventLogService.isDuplicated(eventId)) {
             logger.info("[eventId: $eventId] 중복 메시지 입니다. ($record)")
             return
         }
-        eventLogJpaRepository.save(EventLogEntity(eventId))
+        eventLogService.checkValidOrder(event)
+        eventLogService.save(event.toEventLogEntity())
         block()
     } catch (ex: Exception) {
         deleteEventLog(eventId)
         deadLetterKafkaProducer.send(
             DeadLetterEvent(
-                eventId = UUID.fromString(record.key()),
                 reason = ex.javaClass.name,
                 reissuedTopic = record.topic(),
                 reissuedKey = record.key(),
@@ -51,7 +57,7 @@ fun consumeWithDlt(
 
 private fun deleteEventLog(eventId: UUID) {
     try {
-        eventLogJpaRepository.deleteById(eventId)
+        eventLogService.deleteById(eventId)
     } catch (ex: Exception) {
         logger.info("[eventId: $eventId] EventLog 롤백 실패")
     }
