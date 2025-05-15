@@ -1,0 +1,126 @@
+version: '3.5'
+services:
+  # common
+  ticketing-kafka-1:
+    image: bitnami/kafka:4.0.0
+    ports:
+      - "9094:9094"
+    environment:
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@ticketing-kafka-1:9093,2@ticketing-kafka-2:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=INTERNAL://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://ticketing-kafka-1:9092,EXTERNAL://localhost:9094
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=INTERNAL
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_KRAFT_CLUSTER_ID=ticketing-kafka-kraft-cluster
+    volumes:
+      - ./.data/ticketing-kafka-1:/bitnami/kafka
+  ticketing-kafka-2:
+    image: bitnami/kafka:4.0.0
+    ports:
+      - "9095:9095"
+    environment:
+      - KAFKA_CFG_NODE_ID=2
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@ticketing-kafka-1:9093,2@ticketing-kafka-2:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=INTERNAL://:9092,CONTROLLER://:9093,EXTERNAL://:9095
+      - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://ticketing-kafka-2:9092,EXTERNAL://localhost:9095
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=INTERNAL
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_KRAFT_CLUSTER_ID=ticketing-kafka-kraft-cluster
+    volumes:
+      - ./.data/ticketing-kafka-2:/bitnami/kafka
+  ticketing-dead-letter-kafka:
+    image: bitnami/kafka:4.0.0
+    ports:
+      - "9096:9096"
+    environment:
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@ticketing-dead-letter-kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=INTERNAL://:9092,CONTROLLER://:9093,EXTERNAL://:9096
+      - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://ticketing-dead-letter-kafka:9092,EXTERNAL://localhost:9096
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=INTERNAL
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_KRAFT_CLUSTER_ID=ticketing-dead-letter-kafka-cluster
+    volumes:
+      - ./.data/ticketing-dead-letter-kafka:/bitnami/kafka
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    ports:
+      - "8089:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=common-kafka
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=ticketing-kafka-1:9092,ticketing-kafka-2:9092
+      - KAFKA_CLUSTERS_1_NAME=dead-letter-kafka
+      - KAFKA_CLUSTERS_1_BOOTSTRAPSERVERS=ticketing-dead-letter-kafka:9092
+    depends_on:
+      - ticketing-kafka-1
+      - ticketing-kafka-2
+      - ticketing-dead-letter-kafka
+
+  # event-service
+  event-service-mysql:
+    image: 'mysql:8.4.3'
+    ports:
+      - "3306:3306"
+    environment:
+      - TZ=Asia/Seoul
+      - MYSQL_DATABASE=eventdb
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+    volumes:
+      - ./.data/event-mysql:/var/lib/mysql
+
+  # payment-service
+  payment-service-mysql:
+    image: 'mysql:8.4.3'
+    ports:
+      - "3307:3306"
+    environment:
+      - TZ=Asia/Seoul
+      - MYSQL_DATABASE=paymentdb
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+    volumes:
+      - ./.data/payment-mysql:/var/lib/mysql
+
+  # ticketing-service
+  ticketing-service-mysql:
+    image: 'mysql:8.4.3'
+    ports:
+      - "3308:3306"
+    environment:
+      - TZ=Asia/Seoul
+      - MYSQL_DATABASE=ticketingdb
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+    volumes:
+      - ./.data/ticketing-mysql:/var/lib/mysql
+  ticketing-service-redis:
+    image: redis:7.4.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./.data/ticketing-redis:/data
+
+  # user-service
+  user-service-mysql:
+    image: 'mysql:8.4.3'
+    ports:
+      - "3309:3306"
+    environment:
+      - TZ=Asia/Seoul
+      - MYSQL_DATABASE=userdb
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+    volumes:
+      - ./.data/user-mysql:/var/lib/mysql
