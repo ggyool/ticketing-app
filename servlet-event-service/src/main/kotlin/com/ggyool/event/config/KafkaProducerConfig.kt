@@ -1,12 +1,7 @@
 package com.ggyool.event.config
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.ggyool.common.event.DeadLetterEvent
 import org.apache.kafka.clients.producer.ProducerConfig
-import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.serialization.StringSerializer
-import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,53 +9,29 @@ import org.springframework.context.annotation.Primary
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.core.ProducerFactory
-import org.springframework.kafka.support.ProducerListener
 
 @Configuration
 class KafkaProducerConfig(
     private val kafkaProperties: KafkaProperties,
-    private val objectMapper: ObjectMapper
 ) {
 
     @Bean("kafkaTemplate")
     @Primary
     fun kafkaTemplate(): KafkaTemplate<String, String> {
-        val template = KafkaTemplate(
+        return KafkaTemplate(
             producerFactory(
                 kafkaProperties.bootstrapServers
             )
         )
-        val listener = object : ProducerListener<String, String> {
-            override fun onError(
-                producerRecord: ProducerRecord<String, String>,
-                recordMetadata: RecordMetadata?,
-                exception: java.lang.Exception
-            ) {
-                val event = DeadLetterEvent(
-                    reason = exception.javaClass.name,
-                    reissuedTopic = producerRecord.topic(),
-                    reissuedKey = producerRecord.key(),
-                    reissuedPayload = producerRecord.value()
-                )
-                try {
-                    deadLetterTemplate.send(
-                        DeadLetterEvent.COMMON_DLT_TOPIC,
-                        event.eventId.toString(),
-                        objectMapper.writeValueAsString(event)
-                    )
-                    logger.info("[{}] Dead Letter 이벤트 발급 성공 ({})", event.eventId, event)
-                } catch (ex: Exception) {
-                    logger.error(
-                        "[{}] Dead Letter 이벤트 발급 실패 (event: {} / ex: {})",
-                        event.eventId,
-                        event,
-                        ex.stackTraceToString()
-                    )
-                }
-            }
-        }
-        template.setProducerListener(listener)
-        return template
+    }
+
+    @Bean("deadLetterKafkaTemplate")
+    fun deadLetterKafkaTemplate(): KafkaTemplate<String, String> {
+        return KafkaTemplate(
+            producerFactory(
+                kafkaProperties.properties["dead-letter-bootstrap-servers"]!!.split(",")
+            )
+        )
     }
 
     private fun producerFactory(bootstrapServers: List<String>): ProducerFactory<String, String> {
@@ -83,17 +54,5 @@ class KafkaProducerConfig(
         // 전체 전송 시도에 대한 타임아웃 (linger.ms + request.timeout.ms보다 커야 함)
         props[ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG] = 7000
         return DefaultKafkaProducerFactory(props)
-    }
-
-    private val deadLetterTemplate: KafkaTemplate<String, String> by lazy {
-        KafkaTemplate(
-            producerFactory(
-                kafkaProperties.properties["dead-letter-bootstrap-servers"]!!.split(",")
-            )
-        )
-    }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.name)
     }
 }
