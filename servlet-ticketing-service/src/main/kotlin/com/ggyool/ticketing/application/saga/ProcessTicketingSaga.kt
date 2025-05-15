@@ -7,13 +7,14 @@ import com.ggyool.common.saga.model.SagaContextFactory
 import com.ggyool.ticketing.repository.entity.SagaContextEntity
 import org.springframework.stereotype.Component
 
+// TODO
 @Component
 class ProcessTicketingSaga(
     sagaContextRepository: SagaRepository<SagaContextEntity>,
     sagaContextFactory: SagaContextFactory<SagaContextEntity>,
-    eventCheckHandler: SagaHandler<SagaContextEntity>
+    paymentHandler: SagaHandler<SagaContextEntity>
 ) : EventBasedSaga<SagaContextEntity>(
-    listOf(eventCheckHandler),
+    listOf(paymentHandler),
     sagaContextRepository,
     sagaContextFactory
 ) {

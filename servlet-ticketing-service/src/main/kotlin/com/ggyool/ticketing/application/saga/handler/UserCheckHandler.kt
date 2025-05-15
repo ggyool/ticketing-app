@@ -4,17 +4,16 @@ import com.ggyool.common.saga.SagaHandler
 import com.ggyool.ticketing.repository.entity.SagaContextEntity
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
-class EventCheckHandler(
-    override val stepName: String = "event.check",
+class UserCheckHandler(
+    override val stepName: String = "user.check",
     private val kafkaTemplate: KafkaTemplate<String, String>,
 ) : SagaHandler<SagaContextEntity> {
 
     override fun request(context: SagaContextEntity): SagaContextEntity {
-        // TODO
-        // event.check.request
-//        kafkaTemplate.send("${stepName}.request", context.payload)
+        kafkaTemplate.send("${stepName}.request", UUID.randomUUID().toString(), context.payload)
         return context
     }
 
@@ -23,3 +22,7 @@ class EventCheckHandler(
         return context
     }
 }
+
+
+// 1. 유저 체크
+// 2. 결제

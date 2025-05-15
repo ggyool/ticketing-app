@@ -15,6 +15,7 @@ class KafkaProducerConfig(
     private val kafkaProperties: KafkaProperties
 ) {
 
+    // TODO DLT
     @Bean
     @Primary
     fun producerFactory(): ProducerFactory<String, String> {
