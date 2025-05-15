@@ -26,7 +26,6 @@ class KafkaProducerConfig(
     }
 
     @Bean("deadLetterKafkaTemplate")
-    @Primary
     fun deadLetterKafkaTemplate(): KafkaTemplate<String, String> {
         return KafkaTemplate(
             producerFactory(
