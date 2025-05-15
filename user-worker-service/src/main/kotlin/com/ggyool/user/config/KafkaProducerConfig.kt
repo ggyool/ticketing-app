@@ -1,9 +1,7 @@
 package com.ggyool.user.config
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
-import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,7 +13,6 @@ import org.springframework.kafka.core.ProducerFactory
 @Configuration
 class KafkaProducerConfig(
     private val kafkaProperties: KafkaProperties,
-    private val objectMapper: ObjectMapper
 ) {
 
     @Bean("kafkaTemplate")
@@ -58,9 +55,5 @@ class KafkaProducerConfig(
         // 전체 전송 시도에 대한 타임아웃 (linger.ms + request.timeout.ms보다 커야 함)
         props[ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG] = 7000
         return DefaultKafkaProducerFactory(props)
-    }
-
-    companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.name)
     }
 }

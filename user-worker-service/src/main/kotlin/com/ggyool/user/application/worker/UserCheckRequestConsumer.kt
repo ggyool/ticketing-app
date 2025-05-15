@@ -2,25 +2,21 @@ package com.ggyool.user.application.worker
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ggyool.user.application.helper.consumeWithDlt
-import com.ggyool.user.application.producer.DeadLetterKafkaProducer
-import com.ggyool.user.application.producer.KafkaProducer
-import com.ggyool.user.application.service.EventLogService
 import com.ggyool.user.application.service.UserCheckService
+import com.ggyool.user.helper.consumeWithDlt
 import org.apache.kafka.clients.consumer.ConsumerRecord
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.kafka.annotation.KafkaListener
+import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
 class UserCheckRequestConsumer(
-    private val kafkaProducer: KafkaProducer,
-    private val deadLetterKafkaProducer: DeadLetterKafkaProducer,
+    @Qualifier("kafkaTemplate")
+    private val kafkaTemplate: KafkaTemplate<String, String>,
     private val userCheckService: UserCheckService,
-    private val eventLogService: EventLogService,
     private val objectMapper: ObjectMapper,
 ) {
 
@@ -33,17 +29,11 @@ class UserCheckRequestConsumer(
     fun listenUserCheckRequest(
         record: ConsumerRecord<String, String>,
         acknowledge: Acknowledgment
-    ) = consumeWithDlt(record, acknowledge, deadLetterKafkaProducer) {
+    ) = consumeWithDlt(record, acknowledge) {
         val request = objectMapper.readValue<UserCheckRequest>(record.value())
-        val eventId = record.key()
-
-        if (eventLogService.isDuplicated(UUID.fromString(eventId))) {
-            logger.info("[eventId: $eventId] 중복 메시지 입니다. ($record)")
-            return
-        }
         val userId = request.userId
         val userCheckResponse = UserCheckResponse(userId, userCheckService.isActiveUser(userId))
-        kafkaProducer.send(
+        kafkaTemplate.send(
             "user.check.response",
             UUID.randomUUID().toString(),
             objectMapper.writeValueAsString(userCheckResponse)
@@ -58,8 +48,4 @@ class UserCheckRequestConsumer(
         val userId: Long,
         val isActive: Boolean,
     )
-
-    companion object {
-        private val logger: Logger = LoggerFactory.getLogger(this::class.java)
-    }
 }
