@@ -1,4 +1,4 @@
-package com.ggyool.ticketing.common
+package com.ggyool.ticketing.helper
 
 import org.redisson.api.RLock
 import org.redisson.api.RedissonClient
@@ -10,7 +10,7 @@ private val redissonClient: RedissonClient by lazy {
     ApplicationContextProvider.getBean(RedissonClient::class.java)
 }
 
-private val logger: Logger = LoggerFactory.getLogger("RedisLock")
+private val logger: Logger = LoggerFactory.getLogger("RedisHelper")
 
 fun <T> redisLock(
     keyGenerator: () -> String,

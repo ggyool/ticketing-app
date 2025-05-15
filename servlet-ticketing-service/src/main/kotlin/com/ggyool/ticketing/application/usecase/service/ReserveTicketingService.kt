@@ -1,7 +1,7 @@
 package com.ggyool.ticketing.application.usecase.service
 
 import com.ggyool.ticketing.application.usecase.ReserveTicketingUsecase
-import com.ggyool.ticketing.common.redisLock
+import com.ggyool.ticketing.helper.redisLock
 import com.ggyool.ticketing.exception.TicketingAppException
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript

@@ -1,4 +1,4 @@
-package com.ggyool.ticketing.common
+package com.ggyool.ticketing.helper
 
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -13,5 +13,5 @@ object ApplicationContextProvider : ApplicationContextAware {
         context = applicationContext
     }
 
-    fun <T> getBean(beanClass: Class<T>): T = context.getBean(beanClass)
+    fun <T> getBean(type: Class<T>): T = context.getBean(type)
 }

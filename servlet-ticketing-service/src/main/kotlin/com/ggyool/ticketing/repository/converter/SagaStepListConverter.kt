@@ -3,7 +3,7 @@ package com.ggyool.ticketing.repository.converter
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ggyool.common.saga.model.SagaStep
-import com.ggyool.ticketing.common.ApplicationContextProvider
+import com.ggyool.ticketing.helper.ApplicationContextProvider
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
 
