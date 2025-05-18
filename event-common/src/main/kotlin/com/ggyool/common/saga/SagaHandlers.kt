@@ -26,11 +26,11 @@ class SagaHandlers<T : SagaContext>(
         return handlers[curIdx - 1]
     }
 
-    fun nextHandler(stepName: String): SagaHandler<T> {
-        if (isLastStep(stepName)) {
-            throw IllegalStateException("${stepName}이 마지막 handler 입니다")
+    fun nextHandler(currentHandler: SagaHandler<T>): SagaHandler<T> {
+        if (currentHandler.isLastStep()) {
+            throw IllegalStateException("${currentHandler.stepName}이 마지막 handler 입니다")
         }
-        val curIdx = handlers.indexOfFirst { it.stepName == stepName }
+        val curIdx = handlers.indexOfFirst { it.stepName == currentHandler.stepName }
         return handlers[curIdx + 1]
     }
 

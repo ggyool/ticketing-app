@@ -2,7 +2,7 @@ package com.ggyool.common.saga.model
 
 enum class StepState(
     private var succeedNext: StepState? = null,
-    private var failedNext: StepState? = null,
+    private var cancelNext: StepState? = null,
 ) {
     STARTED,
     SUCCEEDED,
@@ -10,26 +10,26 @@ enum class StepState(
     COMPENSATED,
     FAILED;
 
-    fun successNext()  = this.succeedNext!!
+    fun successNext() = this.succeedNext!!
 
-    fun failedNext() = this.failedNext!!
+    fun cancelNext() = this.cancelNext!!
 
     companion object {
         init {
             STARTED.succeedNext = SUCCEEDED
-            STARTED.failedNext = FAILED
+            STARTED.cancelNext = FAILED
 
             SUCCEEDED.succeedNext = SUCCEEDED
-            SUCCEEDED.failedNext = COMPENSATING
+            SUCCEEDED.cancelNext = COMPENSATING
 
-            COMPENSATING.succeedNext = COMPENSATED
-            COMPENSATING.failedNext = COMPENSATING
+            COMPENSATING.succeedNext = null
+            COMPENSATING.cancelNext = COMPENSATED
 
-            COMPENSATED.succeedNext = COMPENSATED
-            COMPENSATED.failedNext = COMPENSATED
+            COMPENSATED.succeedNext = null
+            COMPENSATED.cancelNext = null
 
-            FAILED.succeedNext = FAILED
-            FAILED.failedNext = FAILED
+            FAILED.succeedNext = null
+            FAILED.cancelNext = null
         }
     }
 }

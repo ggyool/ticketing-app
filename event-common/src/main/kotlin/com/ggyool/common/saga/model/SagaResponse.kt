@@ -4,14 +4,5 @@ import java.util.*
 
 data class SagaResponse(
     val sagaId: UUID,
-    val result: Result
-) {
-
-    fun succeeded() = result == Result.SUCCEEDED
-
-    fun cancelled() = result == Result.CANCELLED
-
-    enum class Result {
-        SUCCEEDED, CANCELLED
-    }
-}
+    val payload: String
+)
