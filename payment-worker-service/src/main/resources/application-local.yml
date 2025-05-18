@@ -10,6 +10,8 @@ spring:
     bootstrap-servers: localhost:9094,localhost:9095
     consumer:
       auto-offset-reset: latest
+    properties:
+      dead-letter-bootstrap-servers: localhost:9096
   datasource:
     url: jdbc:mysql://localhost:3307/paymentdb?serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver

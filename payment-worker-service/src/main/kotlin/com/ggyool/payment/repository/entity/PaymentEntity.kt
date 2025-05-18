@@ -10,6 +10,7 @@ import java.time.LocalDateTime
 @Table(name = "payment")
 @Entity
 class PaymentEntity(
+    // TODO change UUID
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long?,

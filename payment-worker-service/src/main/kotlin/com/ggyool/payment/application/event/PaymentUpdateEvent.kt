@@ -2,6 +2,7 @@ package com.ggyool.payment.application.event
 
 import java.time.LocalDateTime
 
+// TODO 수정
 data class PaymentUpdateEvent(
     val eventType: String = "PaymentUpdateEvent",
     val aggregate: String = "Payment",

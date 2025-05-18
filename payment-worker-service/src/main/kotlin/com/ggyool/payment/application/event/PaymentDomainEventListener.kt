@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 
+// TODO 수정
 @Component
 class PaymentDomainEventListener(
     private val kafkaTemplate: KafkaTemplate<String, String>,
