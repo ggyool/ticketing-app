@@ -14,7 +14,7 @@ class SagaContextEntityFactory : SagaContextFactory<SagaContextEntity> {
         id: UUID,
         version: Long,
         sagaType: String,
-        payload: String?,
+        payload: String,
         currentStep: String,
         stepHistory: List<SagaStep>,
         sagaState: SagaState
