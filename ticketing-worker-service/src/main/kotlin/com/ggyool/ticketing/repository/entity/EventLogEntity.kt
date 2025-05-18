@@ -1,6 +1,7 @@
 package com.ggyool.ticketing.repository.entity
 
 import com.ggyool.common.event.ConsumedEvent
+import jakarta.annotation.Nullable
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Index
@@ -18,9 +19,12 @@ import java.util.*
 data class EventLogEntity(
     @Id
     override val eventId: UUID,
-    val aggregateType: String,
-    val aggregateId: String,
-    val version: Long,
+    @Nullable
+    val aggregateType: String? = null,
+    @Nullable
+    val aggregateId: String? = null,
+    @Nullable
+    val version: Long? = null,
     override val timeStamp: LocalDateTime = LocalDateTime.now(),
 ) : ConsumedEvent<UUID>
 

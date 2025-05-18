@@ -17,7 +17,7 @@ class EventDomainEventConsumer(
 
     @KafkaListener(
         topics = [EVENT_DOMAIN_EVENT_TOPIC],
-        containerFactory = "eventKafkaListenerContainerFactory",
+        containerFactory = "kafkaListenerContainerFactory",
         groupId = "event-domain-event-group",
         concurrency = "2"
     )

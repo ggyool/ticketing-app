@@ -5,6 +5,7 @@ import com.ggyool.common.event.DeadLetterEvent
 import com.ggyool.ticketing.application.producer.DeadLetterKafkaProducer
 import com.ggyool.ticketing.application.service.EventLogService
 import com.ggyool.ticketing.application.worker.EventDomainEvent
+import com.ggyool.ticketing.repository.entity.EventLogEntity
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -25,6 +26,35 @@ private val objectMapper: ObjectMapper by lazy {
 
 private val logger: Logger = LoggerFactory.getLogger("KafkaConsumeHelper")
 
+fun consumeWithDlt(
+    record: ConsumerRecord<String, String>,
+    acknowledgment: Acknowledgment,
+    block: () -> Unit,
+) {
+    val eventId = UUID.fromString(record.key())
+    try {
+        if (eventLogService.isDuplicated(eventId)) {
+            logger.info("[eventId: $eventId] 중복 메시지 입니다. ($record)")
+            return
+        }
+        eventLogService.save(EventLogEntity(eventId = eventId))
+        block()
+    } catch (ex: Exception) {
+        logger.error("[${record.key()}] Consuming Error $record", ex)
+        deleteEventLog(eventId)
+        deadLetterKafkaProducer.send(
+            DeadLetterEvent(
+                reason = ex.javaClass.name,
+                reissuedTopic = record.topic(),
+                reissuedKey = record.key(),
+                reissuedPayload = record.value()
+            )
+        )
+    } finally {
+        acknowledgment.acknowledge()
+    }
+}
+
 fun consumeDomainEventWithDlt(
     record: ConsumerRecord<String, String>,
     acknowledgment: Acknowledgment,
@@ -41,6 +71,7 @@ fun consumeDomainEventWithDlt(
         eventLogService.save(event.toEventLogEntity())
         block()
     } catch (ex: Exception) {
+        logger.error("[${record.key()}] Consuming Error $record", ex)
         deleteEventLog(eventId)
         deadLetterKafkaProducer.send(
             DeadLetterEvent(

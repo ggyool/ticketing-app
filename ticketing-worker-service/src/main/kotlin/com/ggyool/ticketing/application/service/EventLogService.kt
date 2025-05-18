@@ -35,7 +35,7 @@ class EventLogService(
         if (version == 0L) {
             return
         }
-        eventLogJpaRepository.findEventLog(
+        eventLogJpaRepository.findDomainEventLog(
             event.aggregateType,
             event.aggregateId.toString(),
             version - 1

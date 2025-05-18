@@ -16,7 +16,7 @@ interface EventLogJpaRepository : CrudRepository<EventLogEntity, UUID> {
           AND version = :version
     """
     )
-    fun findEventLog(
+    fun findDomainEventLog(
         aggregateType: String,
         aggregateId: String,
         version: Long

@@ -36,9 +36,9 @@ class KafkaConsumerConfig(
         return DefaultKafkaConsumerFactory(props)
     }
 
-    @Bean(name = ["eventKafkaListenerContainerFactory"])
+    @Bean(name = ["kafkaListenerContainerFactory"])
     @Primary
-    fun eventListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
+    fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = consumerFactory()
         // Spring Kafka의 커밋 모드 설정
