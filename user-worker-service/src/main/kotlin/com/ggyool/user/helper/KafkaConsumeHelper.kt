@@ -34,6 +34,7 @@ fun consumeWithDlt(
         eventLogJpaRepository.save(EventLogEntity(eventId))
         block()
     } catch (ex: Exception) {
+        logger.error("${record.key()} Consuming Error $record", ex)
         deleteEventLog(eventId)
         deadLetterKafkaProducer.send(
             DeadLetterEvent(

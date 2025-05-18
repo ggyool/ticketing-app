@@ -23,5 +23,4 @@ class ApplicationConfig {
                 this.setSerializationInclusion(JsonInclude.Include.NON_NULL)
             }
     }
-
 }

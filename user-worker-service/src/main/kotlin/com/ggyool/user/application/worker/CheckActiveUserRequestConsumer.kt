@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class UserCheckRequestConsumer(
+class CheckActiveUserRequestConsumer(
     @Qualifier("kafkaTemplate")
     private val kafkaTemplate: KafkaTemplate<String, String>,
     private val userCheckService: UserCheckService,
@@ -21,30 +21,36 @@ class UserCheckRequestConsumer(
 ) {
 
     @KafkaListener(
-        topics = ["user.check.request"],
+        topics = ["user.check.active.request"],
         containerFactory = "kafkaListenerContainerFactory",
-        groupId = "user-check-request-group",
+        groupId = "check-active-user-request-group",
         concurrency = "2"
     )
-    fun listenUserCheckRequest(
+    fun listenCheckActiveUserRequest(
         record: ConsumerRecord<String, String>,
         acknowledge: Acknowledgment
     ) = consumeWithDlt(record, acknowledge) {
-        val request = objectMapper.readValue<UserCheckRequest>(record.value())
-        val userId = request.userId
-        val userCheckResponse = UserCheckResponse(userId, userCheckService.isActiveUser(userId))
+        val request = objectMapper.readValue<CheckActiveUserRequest>(record.value())
+        val response = CheckActiveUserResponse(
+            request.sagaId,
+            request.userId,
+            userCheckService.isActiveUser(request.userId)
+        )
+        // TODO change helper
         kafkaTemplate.send(
-            "user.check.response",
+            "user.check.active.response",
             UUID.randomUUID().toString(),
-            objectMapper.writeValueAsString(userCheckResponse)
+            objectMapper.writeValueAsString(response)
         )
     }
 
-    data class UserCheckRequest(
+    data class CheckActiveUserRequest(
+        val sagaId: String?,
         val userId: Long
     )
 
-    data class UserCheckResponse(
+    data class CheckActiveUserResponse(
+        val sagaId: String?,
         val userId: Long,
         val isActive: Boolean,
     )
