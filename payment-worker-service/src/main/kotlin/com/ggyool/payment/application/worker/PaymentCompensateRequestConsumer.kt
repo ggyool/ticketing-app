@@ -8,6 +8,7 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
+import produceWithDlt
 import java.util.*
 
 @Component
@@ -33,8 +34,7 @@ class PaymentCompensateRequestConsumer(
             sagaId = request.sagaId,
             paymentId = UUID.randomUUID()
         )
-        // TODO change helper
-        kafkaTemplate.send(
+        produceWithDlt(
             "payment.compensate.response",
             UUID.randomUUID().toString(),
             objectMapper.writeValueAsString(response)
