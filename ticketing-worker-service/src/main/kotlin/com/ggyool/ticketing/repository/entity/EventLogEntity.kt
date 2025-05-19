@@ -25,7 +25,7 @@ data class EventLogEntity(
     val aggregateId: String? = null,
     @Nullable
     val version: Long? = null,
-    override val timeStamp: LocalDateTime = LocalDateTime.now(),
+    override val timestamp: LocalDateTime = LocalDateTime.now(),
 ) : ConsumedEvent<UUID>
 
 

@@ -12,5 +12,5 @@ import java.util.*
 data class EventLogEntity(
     @Id
     override val eventId: UUID,
-    override val timeStamp: LocalDateTime = LocalDateTime.now(),
+    override val timestamp: LocalDateTime = LocalDateTime.now(),
 ) : ConsumedEvent<UUID>

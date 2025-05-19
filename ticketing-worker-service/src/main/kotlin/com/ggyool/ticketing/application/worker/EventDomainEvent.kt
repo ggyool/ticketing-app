@@ -21,7 +21,7 @@ data class EventDomainEvent(
             aggregateType = aggregateType,
             aggregateId = aggregateId.toString(),
             version = version,
-            timeStamp = timeStamp,
+            timestamp = timeStamp,
         )
     }
 
