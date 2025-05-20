@@ -1,4 +1,4 @@
-package com.ggyool.ticketing.application.service
+package com.ggyool.ticketing.application.usecase.service
 
 import com.ggyool.common.event.DomainEvent
 import com.ggyool.ticketing.exception.TicketingWorkerException

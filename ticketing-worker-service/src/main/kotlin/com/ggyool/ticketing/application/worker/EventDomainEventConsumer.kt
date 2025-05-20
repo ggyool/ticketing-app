@@ -2,7 +2,7 @@ package com.ggyool.ticketing.application.worker
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ggyool.ticketing.application.service.TicketingUpdateService
+import com.ggyool.ticketing.application.usecase.service.TicketingUpdateService
 import com.ggyool.ticketing.helper.consumeDomainEventWithDlt
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener

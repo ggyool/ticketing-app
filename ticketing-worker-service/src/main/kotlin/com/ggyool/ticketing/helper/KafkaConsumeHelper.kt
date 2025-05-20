@@ -3,7 +3,7 @@ package com.ggyool.ticketing.helper
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ggyool.common.event.DeadLetterEvent
 import com.ggyool.ticketing.application.producer.DeadLetterKafkaProducer
-import com.ggyool.ticketing.application.service.EventLogService
+import com.ggyool.ticketing.application.usecase.service.EventLogService
 import com.ggyool.ticketing.application.worker.EventDomainEvent
 import com.ggyool.ticketing.repository.entity.EventLogEntity
 import org.apache.kafka.clients.consumer.ConsumerRecord
