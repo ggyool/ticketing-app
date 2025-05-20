@@ -30,11 +30,11 @@ class ProcessTicketingSagaConsumer(
         val input = objectMapper.readValue<ProcessTicketingInput>(record.value())
         val payload = ProcessTicketingSaga.Payload(
             sagaId = UUID.randomUUID(),
+            referenceId = UUID.fromString(input.ticketId),
             eventId = input.eventId,
             userId = input.userId,
-            ticketId = input.ticketId,
+            ticketId = UUID.fromString(input.ticketId),
             point = input.point,
-            paymentInfo = input.paymentInfo,
         )
         processTicketingSaga.start("ticketing.process", payload)
     }
@@ -66,8 +66,7 @@ class ProcessTicketingSagaConsumer(
     data class ProcessTicketingInput(
         val eventId: Long,
         val userId: Long,
-        val ticketId: UUID,
+        val ticketId: String,
         val point: Long,
-        val paymentInfo: String,
     )
 }

@@ -28,11 +28,11 @@ class ProcessTicketingSaga(
 
     data class Payload(
         override val sagaId: UUID,
+        override val referenceId: UUID,
         val eventId: Long,
         val userId: Long,
         val ticketId: UUID,
         val point: Long,
-        val paymentInfo: String,
         var paymentId: UUID? = null,
     ) : SagaPayload {
 
@@ -41,11 +41,11 @@ class ProcessTicketingSaga(
         ): Payload {
             return Payload(
                 sagaId = this.sagaId,
+                referenceId = this.ticketId,
                 eventId = this.eventId,
                 userId = this.userId,
                 ticketId = this.ticketId,
                 point = this.point,
-                paymentInfo = this.paymentInfo,
                 paymentId = paymentId
             )
         }
