@@ -8,6 +8,7 @@ interface ProcessTicketingUsecase {
         val ticketId: String,
         val eventId: Long,
         val userId: Long,
+        val totalAmount: Long,
         val point: Long,
     )
 }

@@ -26,6 +26,8 @@ class PaymentCreateHandler(
             ticketId = payload.ticketId.toString(),
             userId = payload.userId,
             eventId = payload.eventId,
+            totalAmount = payload.totalAmount,
+            point = payload.point,
         )
         produceWithDlt("${stepName}.request", UUID.randomUUID().toString(), request)
         return context
@@ -80,6 +82,8 @@ class PaymentCreateHandler(
         val ticketId: String,
         val eventId: Long,
         val userId: Long,
+        val totalAmount: Long,
+        val point: Long,
     )
 
     data class PaymentCreateResponse(

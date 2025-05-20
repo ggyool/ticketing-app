@@ -38,6 +38,7 @@ class ProcessTicketingService(
             eventId = eventId,
             userId = userId,
             ticketId = ticketId,
+            totalAmount = processTicketingInput.totalAmount,
             point = processTicketingInput.point,
         )
         // ticketing-worker-service 에서 해당 토픽 구독하여 사가 실행
@@ -48,6 +49,7 @@ class ProcessTicketingService(
         val eventId: Long,
         val userId: Long,
         val ticketId: String,
+        val totalAmount: Long,
         val point: Long,
     )
 

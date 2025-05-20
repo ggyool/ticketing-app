@@ -34,6 +34,7 @@ class ProcessTicketingSagaConsumer(
             eventId = input.eventId,
             userId = input.userId,
             ticketId = UUID.fromString(input.ticketId),
+            totalAmount = input.totalAmount,
             point = input.point,
         )
         processTicketingSaga.start("ticketing.process", payload)
@@ -67,6 +68,7 @@ class ProcessTicketingSagaConsumer(
         val eventId: Long,
         val userId: Long,
         val ticketId: String,
+        val totalAmount: Long,
         val point: Long,
     )
 }

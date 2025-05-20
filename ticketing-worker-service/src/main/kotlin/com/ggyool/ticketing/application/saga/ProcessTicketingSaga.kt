@@ -37,6 +37,7 @@ class ProcessTicketingSaga(
         val eventId: Long,
         val userId: Long,
         val ticketId: UUID,
+        val totalAmount: Long,
         val point: Long,
         var paymentId: UUID? = null,
     ) : SagaPayload {
@@ -50,6 +51,7 @@ class ProcessTicketingSaga(
                 eventId = this.eventId,
                 userId = this.userId,
                 ticketId = this.ticketId,
+                totalAmount = this.totalAmount,
                 point = this.point,
                 paymentId = paymentId
             )
