@@ -1,5 +1,6 @@
 package com.ggyool.payment.repository.entity
 
+import com.ggyool.payment.exception.PaymentWorkerException
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
@@ -30,11 +31,11 @@ class PaymentEntity(
     val ticketId: UUID,
 
     @Column(nullable = true)
-    val pgPaymentId: UUID?,
+    var pgPaymentId: String?,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    val status: PaymentStatus,
+    var status: PaymentStatus,
 
     val totalAmount: Long,
 
@@ -71,4 +72,22 @@ class PaymentEntity(
         createdAt = null,
         updatedAt = null,
     )
+
+    fun succeeded() {
+        if (this.status != PaymentStatus.CREATED) {
+            throw PaymentWorkerException("[paymentId: ${this.id} status: ${this.status}] payment 가 CREATED 상태가 아닙니다")
+        }
+        this.status = PaymentStatus.SUCCEEDED
+    }
+
+    fun failed() {
+        if (this.status != PaymentStatus.CREATED) {
+            throw PaymentWorkerException("[paymentId: ${this.id} status: ${this.status}] payment 가 CREATED 상태가 아닙니다")
+        }
+        this.status = PaymentStatus.FAILED
+    }
+
+    fun fillPgPaymentId(pgPaymentId: String) {
+        this.pgPaymentId = pgPaymentId
+    }
 }
