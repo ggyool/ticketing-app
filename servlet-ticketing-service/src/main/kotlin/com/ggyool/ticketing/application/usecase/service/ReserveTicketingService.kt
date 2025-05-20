@@ -2,6 +2,7 @@ package com.ggyool.ticketing.application.usecase.service
 
 import com.ggyool.ticketing.application.usecase.ReserveTicketingUsecase
 import com.ggyool.ticketing.exception.TicketingAppException
+import com.ggyool.ticketing.helper.LockAcquisitionFailedException
 import com.ggyool.ticketing.helper.redisLock
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript
@@ -28,7 +29,13 @@ class ReserveTicketingService(
         validateDuplicatedReservation(eventId, userId.toString())
         try {
             return ReserveTicketingUsecase.ReserveTicketingOutput(
-                checkAndReserveTicketing(eventId, userId.toString())!!
+                checkAndReserveTicketing(eventId, userId.toString())
+            )
+        } catch (ex: LockAcquisitionFailedException) {
+            rollbackReserveTicketing(eventId, userId.toString())
+            throw TicketingAppException(
+                HttpStatus.BAD_REQUEST,
+                "[eventId: ${eventId}, userId: ${userId}] 요청이 많습니다 잠시 후 시도해 보세요"
             )
         } catch (ex: Exception) {
             rollbackReserveTicketing(eventId, userId.toString())
@@ -57,7 +64,7 @@ class ReserveTicketingService(
         }
     }
 
-    private fun checkAndReserveTicketing(eventId: Long, userId: String): String? = redisLock(
+    private fun checkAndReserveTicketing(eventId: Long, userId: String): String = redisLock(
         keyGenerator = { TICKETING_RESERVATION_LOCK_KEY.format(eventId) },
         waitMillis = 2000,
         releaseMillis = 2000,
@@ -116,6 +123,6 @@ class ReserveTicketingService(
         private const val TICKETING_PAYMENT_COMPLETED_KEY = "ticketing:%s:payment:completed"
         private const val APPLY_FIELD_COUNT = "1"
 
-        private const val PAYMENT_WAITING_EXPIRE_SECOND = 600L
+        private const val PAYMENT_WAITING_EXPIRE_SECOND = 60 * 30L
     }
 }

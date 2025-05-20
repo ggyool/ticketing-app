@@ -12,13 +12,18 @@ private val redissonClient: RedissonClient by lazy {
 
 private val logger: Logger = LoggerFactory.getLogger("RedisHelper")
 
+class LockAcquisitionFailedException(
+    lockKey: String
+) : RuntimeException("[lockKey: $lockKey] 락 획득에 실패했습니다")
+
 fun <T> redisLock(
     keyGenerator: () -> String,
     waitMillis: Long = 1000,
     releaseMillis: Long = 1000,
     block: () -> T
-): T? {
-    val lock = redissonClient.getLock(keyGenerator())
+): T {
+    val lockKey = keyGenerator()
+    val lock = redissonClient.getLock(lockKey)
     if (lock.tryLock(waitMillis, releaseMillis, TimeUnit.MILLISECONDS)) {
         try {
             return block()
@@ -26,7 +31,7 @@ fun <T> redisLock(
             unlock(lock)
         }
     }
-    return null
+    throw LockAcquisitionFailedException(lockKey)
 }
 
 private fun unlock(lock: RLock) {
@@ -36,4 +41,3 @@ private fun unlock(lock: RLock) {
         logger.info("[already unlocked] ${ex.message}")
     }
 }
-
