@@ -18,6 +18,7 @@ import java.util.*
 class SagaContextEntity(
     @Id
     override val id: UUID,
+    @Column(nullable = false, unique = true)
     override val referenceId: UUID,
     @Version
     override val version: Long,
