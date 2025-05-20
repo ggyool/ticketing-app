@@ -22,6 +22,8 @@ spring:
         format_sql: true
         highlight_sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
   kafka:
     bootstrap-servers: localhost:9094,localhost:9095
+    properties:
+      dead-letter-bootstrap-servers: localhost:9096
