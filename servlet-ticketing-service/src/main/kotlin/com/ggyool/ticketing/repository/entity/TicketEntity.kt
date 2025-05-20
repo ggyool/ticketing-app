@@ -6,6 +6,7 @@ import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 
+// TODO worker 쪽으로 옮겨야 함
 @EntityListeners(AuditingEntityListener::class, TicketEntityListener::class)
 @Table(name = "ticket")
 @Entity

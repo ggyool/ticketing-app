@@ -5,9 +5,9 @@ interface ProcessTicketingUsecase {
     fun processTicketing(processTicketingInput: ProcessTicketingInput)
 
     data class ProcessTicketingInput(
+        val ticketId: String,
         val eventId: Long,
         val userId: Long,
         val point: Long,
-        val paymentInfo: String,
     )
 }
