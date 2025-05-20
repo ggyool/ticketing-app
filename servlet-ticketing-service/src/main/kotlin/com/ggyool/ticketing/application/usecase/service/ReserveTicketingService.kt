@@ -1,27 +1,41 @@
 package com.ggyool.ticketing.application.usecase.service
 
 import com.ggyool.ticketing.application.usecase.ReserveTicketingUsecase
-import com.ggyool.ticketing.helper.redisLock
 import com.ggyool.ticketing.exception.TicketingAppException
+import com.ggyool.ticketing.helper.redisLock
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.util.*
 
+/**
+ *  티케팅 예약 로직
+ *  티케팅 도메인은 순간 요청이 몰린다고 생각하여 레디스만 단일로 이용하여 티켓을 선점하는 작업을 먼저 진행
+ *  요청 성공시 클라이언트에서는 ticketId를 받아서 다음 티케팅 프로세스에 사용
+ *  티켓 도메인이 커머스에서 주문 도메인 같은 역할을 하는데 티켓 엔티티는 결제까지 완료한 이후에 생성하고 싶어서 그렇게 구현하였음
+ */
 @Service
 class ReserveTicketingService(
     private val stringRedisTemplate: StringRedisTemplate,
 ) : ReserveTicketingUsecase {
 
-    override fun reserveTicketing(reserveTicketingInput: ReserveTicketingUsecase.ReserveTicketingInput) {
+    override fun reserveTicketing(reserveTicketingInput: ReserveTicketingUsecase.ReserveTicketingInput)
+            : ReserveTicketingUsecase.ReserveTicketingOutput {
+
         val eventId = reserveTicketingInput.eventId
         val userId = reserveTicketingInput.userId
         validateDuplicatedReservation(eventId, userId.toString())
         try {
-            checkAndReserveTicketing(eventId, userId.toString())
+            return ReserveTicketingUsecase.ReserveTicketingOutput(
+                checkAndReserveTicketing(eventId, userId.toString())!!
+            )
         } catch (ex: Exception) {
             rollbackReserveTicketing(eventId, userId.toString())
+            throw TicketingAppException(
+                HttpStatus.BAD_REQUEST,
+                "[eventId: ${eventId}, userId: ${userId}] redis 작업 중 문제 발생"
+            )
         }
     }
 
@@ -43,7 +57,7 @@ class ReserveTicketingService(
         }
     }
 
-    private fun checkAndReserveTicketing(eventId: Long, userId: String) = redisLock(
+    private fun checkAndReserveTicketing(eventId: Long, userId: String): String? = redisLock(
         keyGenerator = { TICKETING_RESERVATION_LOCK_KEY.format(eventId) },
         waitMillis = 2000,
         releaseMillis = 2000,
@@ -52,7 +66,8 @@ class ReserveTicketingService(
 
         val opsForHash = stringRedisTemplate.opsForHash<String, String>()
         val paymentWaitingKey = TICKETING_PAYMENT_WAITING_KEY.format(eventId)
-        opsForHash.put(paymentWaitingKey, userId, UUID.randomUUID().toString())
+        val ticketId = UUID.randomUUID().toString()
+        opsForHash.put(paymentWaitingKey, userId, ticketId)
         val script = """
             local res = redis.call("HEXPIRE", KEYS[1], ARGV[1], "FIELDS", "$APPLY_FIELD_COUNT", ARGV[2])
             return res
@@ -63,6 +78,7 @@ class ReserveTicketingService(
             PAYMENT_WAITING_EXPIRE_SECOND.toString(),
             userId,
         )
+        ticketId
     }
 
     private fun rollbackReserveTicketing(eventId: Long, userId: String) {
