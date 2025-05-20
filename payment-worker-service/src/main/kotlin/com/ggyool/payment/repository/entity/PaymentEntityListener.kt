@@ -1,11 +1,12 @@
 package com.ggyool.payment.repository.entity
 
-import com.ggyool.payment.application.event.PaymentCreateEvent
-import com.ggyool.payment.application.event.PaymentUpdateEvent
+import com.ggyool.payment.application.event.PaymentDomainEvent
 import jakarta.persistence.PostPersist
 import jakarta.persistence.PostUpdate
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
+import java.util.*
 
 @Component
 class PaymentEntityListener(
@@ -15,16 +16,14 @@ class PaymentEntityListener(
     @PostPersist
     fun postPersist(paymentEntity: PaymentEntity) {
         applicationEventPublisher.publishEvent(
-            PaymentCreateEvent(
-                payload = PaymentCreateEvent.Payload(
-                    id = paymentEntity.id!!,
-                    eventId = paymentEntity.eventId,
-                    userId = paymentEntity.userId,
-                    status = paymentEntity.status.toString(),
-                    version = paymentEntity.version!!,
-                    createdAt = paymentEntity.createdAt!!,
-                    updatedAt = paymentEntity.updatedAt!!
-                )
+            PaymentDomainEvent(
+                UUID.randomUUID().toString(),
+                version = paymentEntity.version!!,
+                aggregateId = paymentEntity.id,
+                aggregateType = "payment",
+                eventType = "create",
+                timeStamp = LocalDateTime.now(),
+                payload = PaymentDomainEvent.Payload.from(paymentEntity)
             )
         )
     }
@@ -32,16 +31,14 @@ class PaymentEntityListener(
     @PostUpdate
     fun postUpdate(paymentEntity: PaymentEntity) {
         applicationEventPublisher.publishEvent(
-            PaymentUpdateEvent(
-                payload = PaymentUpdateEvent.Payload(
-                    id = paymentEntity.id!!,
-                    eventId = paymentEntity.eventId,
-                    userId = paymentEntity.userId,
-                    status = paymentEntity.status.toString(),
-                    version = paymentEntity.version!!,
-                    createdAt = paymentEntity.createdAt!!,
-                    updatedAt = paymentEntity.updatedAt!!
-                )
+            PaymentDomainEvent(
+                UUID.randomUUID().toString(),
+                version = paymentEntity.version!!,
+                aggregateId = paymentEntity.id,
+                aggregateType = "payment",
+                eventType = "update",
+                timeStamp = LocalDateTime.now(),
+                payload = PaymentDomainEvent.Payload.from(paymentEntity)
             )
         )
     }
