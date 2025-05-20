@@ -6,7 +6,7 @@ import com.ggyool.common.saga.model.SagaContextFactory
 import com.ggyool.common.saga.model.SagaPayload
 import com.ggyool.ticketing.application.saga.handler.CheckActiveUserHandler
 import com.ggyool.ticketing.application.saga.handler.CheckFraudUserHandler
-import com.ggyool.ticketing.application.saga.handler.PaymentHandler
+import com.ggyool.ticketing.application.saga.handler.PaymentCreateHandler
 import com.ggyool.ticketing.application.saga.handler.ReserveUserPointHandler
 import com.ggyool.ticketing.repository.entity.SagaContextEntity
 import org.springframework.stereotype.Component
@@ -19,9 +19,14 @@ class ProcessTicketingSaga(
     checkActiveUserHandler: CheckActiveUserHandler,
     reserveUserPointHandler: ReserveUserPointHandler,
     checkFraudUserHandler: CheckFraudUserHandler,
-    paymentHandler: PaymentHandler,
+    paymentCreateHandler: PaymentCreateHandler,
 ) : EventBasedSaga<SagaContextEntity>(
-    listOf(checkActiveUserHandler, reserveUserPointHandler, checkFraudUserHandler, paymentHandler),
+    listOf(
+        checkActiveUserHandler,
+        reserveUserPointHandler,
+        checkFraudUserHandler,
+        paymentCreateHandler
+    ),
     sagaContextRepository,
     sagaContextFactory
 ) {

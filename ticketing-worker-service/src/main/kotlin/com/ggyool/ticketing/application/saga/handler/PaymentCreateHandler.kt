@@ -13,19 +13,19 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class PaymentHandler(
-    override val stepName: String = "payment",
+class PaymentCreateHandler(
+    override val stepName: String = "payment.create",
     private val objectMapper: ObjectMapper,
     private val sagaContextFactory: SagaContextEntityFactory
 ) : SagaHandler<SagaContextEntity> {
 
     override fun proceed(context: SagaContextEntity): SagaContextEntity {
         val payload = objectMapper.readValue<ProcessTicketingSaga.Payload>(context.payload)
-        val request = PaymentRequest(
+        val request = PaymentCreateRequest(
             sagaId = payload.sagaId.toString(),
+            ticketId = payload.ticketId.toString(),
             userId = payload.userId,
             eventId = payload.eventId,
-            paymentInfo = payload.paymentInfo
         )
         produceWithDlt("${stepName}.request", UUID.randomUUID().toString(), request)
         return context
@@ -33,11 +33,11 @@ class PaymentHandler(
 
     override fun compensate(context: SagaContextEntity): SagaContextEntity {
         val payload = objectMapper.readValue<ProcessTicketingSaga.Payload>(context.payload)
-        val request = PaymentCompensateRequest(
+        val request = PaymentDeleteRequest(
             sagaId = payload.sagaId.toString(),
             paymentId = payload.paymentId!!
         )
-        produceWithDlt("payment.compensate.request", UUID.randomUUID().toString(), request)
+        produceWithDlt("payment.delete.request", UUID.randomUUID().toString(), request)
         return context
     }
 
@@ -47,7 +47,8 @@ class PaymentHandler(
         context: SagaContextEntity,
         sagaResponse: SagaResponse
     ): SagaProceedResult<SagaContextEntity> {
-        val response = objectMapper.readValue(sagaResponse.payload, PaymentResponse::class.java)
+        val response =
+            objectMapper.readValue(sagaResponse.payload, PaymentCreateResponse::class.java)
         val payload =
             objectMapper.readValue(context.payload, ProcessTicketingSaga.Payload::class.java)
         val newPayload =
@@ -67,21 +68,21 @@ class PaymentHandler(
         sagaResponse: SagaResponse
     ): SagaContextEntity {
         val response =
-            objectMapper.readValue(sagaResponse.payload, PaymentCompensateResponse::class.java)
-        println("무언가")
+            objectMapper.readValue(sagaResponse.payload, PaymentDeleteResponse::class.java)
+        // 하고 싶은 동작이 있는 경우 넣으면 보상 응답을 받은 이후 실행
         return context
     }
 
     override fun isLastStep(): Boolean = true
 
-    data class PaymentRequest(
+    data class PaymentCreateRequest(
         val sagaId: String,
+        val ticketId: String,
         val eventId: Long,
         val userId: Long,
-        val paymentInfo: String,
     )
 
-    data class PaymentResponse(
+    data class PaymentCreateResponse(
         val sagaId: String,
         val succeed: Boolean,
         val userId: Long,
@@ -89,12 +90,12 @@ class PaymentHandler(
         val paymentId: UUID,
     )
 
-    data class PaymentCompensateRequest(
+    data class PaymentDeleteRequest(
         val sagaId: String,
         val paymentId: UUID,
     )
 
-    data class PaymentCompensateResponse(
+    data class PaymentDeleteResponse(
         val sagaId: String,
         val succeed: Boolean,
         val paymentId: UUID,
