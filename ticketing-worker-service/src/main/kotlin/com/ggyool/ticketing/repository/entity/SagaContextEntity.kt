@@ -23,6 +23,7 @@ class SagaContextEntity(
     @Version
     override val version: Long,
     override val sagaType: String,
+    @Column(length = 2000)
     override val payload: String,
     override val currentStep: String,
     @Convert(converter = SagaStepListConverter::class)
