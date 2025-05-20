@@ -28,8 +28,7 @@ class CheckFraudUserHandler(
     }
 
     override fun compensate(context: SagaContextEntity): SagaContextEntity {
-        // NOOP
-        return context
+        throw IllegalStateException()
     }
 
     override fun needsCompensate(): Boolean = false
@@ -51,15 +50,8 @@ class CheckFraudUserHandler(
         context: SagaContextEntity,
         sagaResponse: SagaResponse
     ): SagaContextEntity {
-        // TODO 무언가
         return context
     }
-
-
-//    override fun onCompensate(sagaResponse: SagaResponse) {
-//        // TODO
-//        println("무언가")
-//    }
 
     data class CheckFraudUserRequest(
         val sagaId: String,

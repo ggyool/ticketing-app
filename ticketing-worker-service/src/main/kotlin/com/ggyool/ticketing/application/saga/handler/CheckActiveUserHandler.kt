@@ -28,8 +28,7 @@ class CheckActiveUserHandler(
     }
 
     override fun compensate(context: SagaContextEntity): SagaContextEntity {
-        // NOOP
-        return context
+        throw IllegalStateException()
     }
 
     override fun needsCompensate(): Boolean = false
@@ -51,7 +50,6 @@ class CheckActiveUserHandler(
         context: SagaContextEntity,
         sagaResponse: SagaResponse
     ): SagaContextEntity {
-        println("무언가")
         return context
     }
 
