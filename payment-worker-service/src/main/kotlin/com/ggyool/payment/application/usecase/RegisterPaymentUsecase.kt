@@ -12,5 +12,7 @@ interface RegisterPaymentUsecase {
         val eventId: Long,
         val userId: Long,
         val ticketId: String,
+        val totalAmount: Long,
+        val pointAmount: Long
     )
 }

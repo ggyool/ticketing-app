@@ -36,6 +36,12 @@ class PaymentEntity(
     @Enumerated(EnumType.STRING)
     val status: PaymentStatus,
 
+    val totalAmount: Long,
+
+    val pointAmount: Long,
+
+    val finalAmount: Long,
+
     @Version
     var version: Long?,
 
@@ -45,13 +51,22 @@ class PaymentEntity(
     @LastModifiedDate
     var updatedAt: LocalDateTime?,
 ) {
-    constructor(eventId: Long, userId: Long, ticketId: UUID) : this(
+    constructor(
+        eventId: Long,
+        userId: Long,
+        ticketId: UUID,
+        totalAmount: Long,
+        pointAmount: Long
+    ) : this(
         id = UUID.randomUUID(),
         eventId = eventId,
         userId = userId,
         ticketId = ticketId,
         pgPaymentId = null,
         status = PaymentStatus.CREATED,
+        totalAmount = totalAmount,
+        pointAmount = pointAmount,
+        finalAmount = totalAmount - pointAmount,
         version = null,
         createdAt = null,
         updatedAt = null,

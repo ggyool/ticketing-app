@@ -35,6 +35,8 @@ class PaymentCreateRequestConsumer(
                 eventId = eventId,
                 userId = userId,
                 ticketId = ticketId,
+                totalAmount = request.totalAmount,
+                pointAmount = request.point,
             )
         )
         val response = PaymentCreateResponse(
@@ -56,6 +58,8 @@ class PaymentCreateRequestConsumer(
         val ticketId: String,
         val eventId: Long,
         val userId: Long,
+        val totalAmount: Long,
+        val point: Long,
     )
 
     data class PaymentCreateResponse(

@@ -23,6 +23,8 @@ class RegisterPaymentService(
                 eventId = registerPaymentInput.eventId,
                 userId = registerPaymentInput.userId,
                 ticketId = UUID.fromString(registerPaymentInput.ticketId),
+                totalAmount = registerPaymentInput.totalAmount,
+                pointAmount = registerPaymentInput.pointAmount,
             )
         )
         paymentHistoryJpaRepository.save(
