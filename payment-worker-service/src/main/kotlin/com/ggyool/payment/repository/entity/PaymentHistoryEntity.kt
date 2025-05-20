@@ -4,47 +4,38 @@ import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
+import java.util.*
 
 @EntityListeners(AuditingEntityListener::class)
-@Table(name = "payment_history")
+@Table(
+    name = "payment_history",
+    indexes = [
+        Index(name = "idx_payment_history_payment_id", columnList = "payment_id")
+    ]
+)
 @Entity
 class PaymentHistoryEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long?,
+    val id: Long?,
 
     @Column(nullable = false)
-    var paymentId: Long,
-
-    @Column(nullable = false)
-    var eventId: Long,
-
-    @Column(nullable = false)
-    var userId: Long,
-
-    @Column(nullable = false)
-    var ticketId: Long,
+    val paymentId: UUID,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    var status: PaymentStatus,
+    val status: PaymentStatus,
 
     @CreatedDate
     var createdAt: LocalDateTime?,
 ) {
     constructor(
-        paymentId: Long,
-        eventId: Long,
-        userId: Long,
-        ticketId: Long,
+        paymentId: UUID,
         status: PaymentStatus
     ) : this(
         id = null,
         paymentId = paymentId,
-        eventId = eventId,
-        userId = userId,
-        ticketId = ticketId,
         status = status,
         createdAt = null,
     )

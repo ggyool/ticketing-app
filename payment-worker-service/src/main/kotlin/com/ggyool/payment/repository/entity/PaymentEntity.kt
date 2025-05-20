@@ -5,28 +5,36 @@ import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
+import java.util.*
 
 @EntityListeners(AuditingEntityListener::class, PaymentEntityListener::class)
-@Table(name = "payment")
+@Table(
+    name = "payment",
+    indexes = [
+        Index(name = "idx_payment_ticket_id", columnList = "ticket_id")
+    ]
+)
 @Entity
 class PaymentEntity(
-    // TODO change UUID
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long?,
+    val id: UUID,
 
     @Column(nullable = false)
-    var eventId: Long,
+    val eventId: Long,
 
     @Column(nullable = false)
-    var userId: Long,
+    val userId: Long,
 
     @Column(nullable = false)
-    var ticketId: Long,
+    val ticketId: UUID,
+
+    @Column(nullable = true)
+    val pgPaymentId: UUID?,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    var status: PaymentStatus,
+    val status: PaymentStatus,
 
     @Version
     var version: Long?,
@@ -37,11 +45,12 @@ class PaymentEntity(
     @LastModifiedDate
     var updatedAt: LocalDateTime?,
 ) {
-    constructor(eventId: Long, userId: Long, ticketId: Long) : this(
-        id = null,
+    constructor(eventId: Long, userId: Long, ticketId: UUID) : this(
+        id = UUID.randomUUID(),
         eventId = eventId,
         userId = userId,
         ticketId = ticketId,
+        pgPaymentId = null,
         status = PaymentStatus.CREATED,
         version = null,
         createdAt = null,
