@@ -5,23 +5,28 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import java.time.LocalDateTime
 import java.util.*
 
 interface SagaContextFactory<T : SagaContext> {
 
     fun createWithAllArgs(
         id: UUID,
+        referenceId: UUID,
         version: Long,
         sagaType: String,
         payload: String,
         currentStep: String,
         stepHistory: List<SagaStep>,
         sagaState: SagaState,
+        createdAt: LocalDateTime,
+        updatedAt: LocalDateTime,
     ): T
 
     fun copyWhenNonNullArgs(
         sagaContext: T,
         id: UUID? = null,
+        referenceId: UUID? = null,
         version: Long? = null,
         sagaType: String? = null,
         payload: String? = null,
@@ -31,24 +36,31 @@ interface SagaContextFactory<T : SagaContext> {
     ): T {
         return createWithAllArgs(
             id = id ?: sagaContext.id,
+            referenceId = referenceId ?: sagaContext.referenceId,
             version = version ?: sagaContext.version,
             sagaType = sagaType ?: sagaContext.sagaType,
             payload = payload ?: sagaContext.payload,
             currentStep = currentStep ?: sagaContext.currentStep,
             stepHistory = stepHistory ?: sagaContext.stepHistory,
             sagaState = sagaState ?: sagaContext.sagaState,
+            createdAt = sagaContext.createdAt,
+            updatedAt = LocalDateTime.now(),
         )
     }
 
     fun started(sagaType: String, payload: SagaPayload, firstStep: String): T {
+        val createdAt = LocalDateTime.now()
         return createWithAllArgs(
             id = payload.sagaId,
+            referenceId = payload.referenceId,
             version = 0L,
             sagaType = sagaType,
             payload = objectMapper.writeValueAsString(payload),
             currentStep = firstStep,
             stepHistory = listOf(SagaStep(firstStep, StepState.STARTED)),
             sagaState = SagaState.STARTED,
+            createdAt = createdAt,
+            updatedAt = createdAt,
         )
     }
 

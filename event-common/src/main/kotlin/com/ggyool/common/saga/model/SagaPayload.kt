@@ -4,4 +4,5 @@ import java.util.*
 
 interface SagaPayload {
     val sagaId: UUID
+    val referenceId: UUID
 }
