@@ -1,10 +1,16 @@
 package com.ggyool.payment.application.usecase
 
+import java.util.*
+
 interface RegisterPaymentUsecase {
 
     fun registerPayment(
-        eventId: Long,
-        userId: Long,
-        ticketId: Long,
-    ): Long
+        registerPaymentInput: RegisterPaymentInput
+    ): UUID
+
+    data class RegisterPaymentInput(
+        val eventId: Long,
+        val userId: Long,
+        val ticketId: String,
+    )
 }

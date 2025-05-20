@@ -8,6 +8,7 @@ import com.ggyool.payment.repository.entity.PaymentHistoryEntity
 import com.ggyool.payment.repository.entity.PaymentStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 class RegisterPaymentService(
@@ -16,23 +17,20 @@ class RegisterPaymentService(
 ) : RegisterPaymentUsecase {
 
     @Transactional
-    override fun registerPayment(eventId: Long, userId: Long, ticketId: Long): Long {
+    override fun registerPayment(registerPaymentInput: RegisterPaymentUsecase.RegisterPaymentInput): UUID {
         val paymentEntity = paymentJpaRepository.save(
             PaymentEntity(
-                eventId = eventId,
-                userId = userId,
-                ticketId = ticketId,
+                eventId = registerPaymentInput.eventId,
+                userId = registerPaymentInput.userId,
+                ticketId = UUID.fromString(registerPaymentInput.ticketId),
             )
         )
         paymentHistoryJpaRepository.save(
             PaymentHistoryEntity(
-                paymentId = paymentEntity.id!!,
-                eventId = eventId,
-                userId = userId,
-                ticketId = ticketId,
+                paymentId = paymentEntity.id,
                 status = PaymentStatus.CREATED,
             )
         )
-        return paymentEntity.id!!
+        return paymentEntity.id
     }
 }
