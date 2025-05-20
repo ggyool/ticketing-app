@@ -23,7 +23,7 @@ dependencies {
     implementation(project(":event-common"))
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.redisson:redisson-spring-boot-starter:3.44.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.18.3")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

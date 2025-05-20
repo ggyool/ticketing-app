@@ -5,25 +5,25 @@ import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
+import java.util.*
 
-// TODO worker 쪽으로 옮겨야 함
 @EntityListeners(AuditingEntityListener::class, TicketEntityListener::class)
 @Table(name = "ticket")
 @Entity
 class TicketEntity(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long?,
+    val id: UUID,
 
     @Column(nullable = false)
-    var eventId: Long,
+    val eventId: Long,
 
     @Column(nullable = false)
-    var userId: Long,
+    val userId: Long,
 
     @Column(nullable = false)
-    var reservedAt: LocalDateTime,
+    @Enumerated(EnumType.STRING)
+    val status: TicketStatus,
 
     @Version
     var version: Long?,
@@ -34,11 +34,11 @@ class TicketEntity(
     @LastModifiedDate
     var updatedAt: LocalDateTime?,
 ) {
-    constructor(eventId: Long, userId: Long, reservedAt: LocalDateTime) : this(
-        id = null,
+    constructor(id: UUID, eventId: Long, userId: Long, status: TicketStatus) : this(
+        id = id,
         eventId = eventId,
         userId = userId,
-        reservedAt = reservedAt,
+        status = status,
         version = null,
         createdAt = null,
         updatedAt = null,
