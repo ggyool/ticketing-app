@@ -75,6 +75,7 @@ class ReserveTicketingService(
         val paymentWaitingKey = TICKETING_PAYMENT_WAITING_KEY.format(eventId)
         val ticketId = UUID.randomUUID().toString()
         opsForHash.put(paymentWaitingKey, userId, ticketId)
+        // redis hash 의 키에 ttl 설정하는 기능이 redis 7.4 부터 도입됐는데 redisTemplate 에 API 가 없어서 lua 로 호출
         val script = """
             local res = redis.call("HEXPIRE", KEYS[1], ARGV[1], "FIELDS", "$APPLY_FIELD_COUNT", ARGV[2])
             return res
