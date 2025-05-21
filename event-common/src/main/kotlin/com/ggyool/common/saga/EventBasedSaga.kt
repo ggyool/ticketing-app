@@ -14,8 +14,8 @@ abstract class EventBasedSaga<T : SagaContext>(
     override fun start(sagaType: String, payload: SagaPayload): T {
         val initialSagaContext =
             sagaContextFactory.started(sagaType, payload, handlers.first().stepName)
-        val processedSagaContext = handlers.first().proceed(initialSagaContext)
-        return sagaRepository.save(processedSagaContext)
+        val sagaContext = sagaRepository.save(initialSagaContext)
+        return handlers.first().proceed(sagaContext)
     }
 
     override fun onResponse(sagaResponse: SagaResponse): T {
