@@ -51,6 +51,8 @@ class PaymentDomainEventConsumer(
                     status = if (moved) TicketStatus.RESERVED else TicketStatus.CANCELLED
                 )
             )
+            // TODO
+            // 실패시 결제 취소 이벤트 발행
         }
     }
 }
